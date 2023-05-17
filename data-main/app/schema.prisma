@@ -1,0 +1,124 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider        = "prisma-client-js"
+    previewFeatures = ["referentialIntegrity"]
+}
+
+datasource db {
+    provider             = "mysql"
+    url                  = env("DATABASE_URL")
+    referentialIntegrity = "prisma"
+}
+
+enum Platform {
+    ETH
+    POLYGON
+    TEZOS
+    BINANCE
+    SOLANA
+}
+
+model User {
+    id             Int           @id @default(autoincrement())
+    email          String        @unique
+    fullname       String
+    hashedPassword String        @map("hashed_password")
+    workspaces     Contributor[]
+    createdAt      DateTime      @default(now()) @map("created_at")
+    updatedAt      DateTime      @default(now()) @updatedAt @map("updated_at")
+
+    @@map("users")
+}
+
+model Workspace {
+    id              Int           @id @default(autoincrement())
+    image           String?
+    name            String        @unique
+    platform        Platform      @default(ETH)
+    twitterId       String?       @map("twitter_id")
+    twitterUsername String?       @map("twitter_username")
+    discord         String?
+    createdAt       DateTime      @default(now()) @map("created_at")
+    updatedAt       DateTime      @default(now()) @updatedAt @map("updated_at")
+    contributors    Contributor[]
+    contracts       Contract[]
+    tags            Tag[]
+    campaigns       Campaign[]
+
+    @@map("workspaces")
+}
+
+enum Role {
+    ADMIN
+}
+
+model Contributor {
+    workspace     Workspace @relation(fields: [workspaceName], references: [name])
+    workspaceName String    @map("workspace_name")
+    user          User      @relation(fields: [userId], references: [id])
+    userId        Int       @map("user_id")
+    role          Role      @default(ADMIN)
+    createdAt     DateTime  @default(now()) @map("created_at")
+    updatedAt     DateTime  @default(now()) @updatedAt @map("updated_at")
+
+    @@id([workspaceName, userId])
+    @@map("contributors")
+}
+
+model Contract {
+    id         Int         @id @default(autoincrement())
+    address    String      @unique
+    platform   Platform    @default(ETH)
+    name       String?
+    symbol     String?
+    category   String? // ERC721, etc
+    thumbnail  String?
+    createdAt  DateTime    @default(now()) @map("created_at")
+    updatedAt  DateTime    @default(now()) @updatedAt @map("updated_at")
+    workspaces Workspace[]
+
+    @@map("contracts")
+}
+
+model Tag {
+    id            Int       @id @default(autoincrement())
+    name          String
+    filter        Json // { key: { operator: eq|gt|lt|in, value: }}
+    workspace     Workspace @relation(fields: [workspaceName], references: [name])
+    workspaceName String    @map("workspace_name")
+    createdAt     DateTime  @default(now()) @map("created_at")
+    updatedAt     DateTime  @default(now()) @updatedAt @map("updated_at")
+
+    @@index([workspaceName])
+    @@map("tags")
+}
+
+model Campaign {
+    id            Int       @id @default(autoincrement())
+    name          String
+    steps         Step[]
+    filter        Json? // [{ [property]: { operator: '', value:'' } }]
+    workspace     Workspace @relation(fields: [workspaceName], references: [name])
+    workspaceName String    @map("workspace_name")
+    createdAt     DateTime  @default(now()) @map("created_at")
+    updatedAt     DateTime  @default(now()) @updatedAt @map("updated_at")
+
+    @@index([workspaceName])
+    @@map("campaigns")
+}
+
+model Step {
+    id         Int      @id @default(autoincrement())
+    name       String // defaults to even name
+    eventName  String   @map("event_name")
+    filter     Json? // [{ [property]: { operator: '', value: '' } }]
+    campaign   Campaign @relation(fields: [campaignId], references: [id])
+    campaignId Int      @map("campaign_id")
+    createdAt  DateTime @default(now()) @map("created_at")
+    updatedAt  DateTime @default(now()) @updatedAt @map("updated_at")
+
+    @@index([campaignId])
+    @@map("steps")
+}

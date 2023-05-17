@@ -1,0 +1,31 @@
+{
+    "apps": [
+        {
+            "name": "holders-job",
+            "script": "holders.py",
+            "args": [""],
+            "wait_ready": true,
+            "autorestart": false,
+            "max_restarts": 5,
+            "interpreter": "./env/bin/python"
+        },
+        {
+            "name": "transactions-job",
+            "script": "transactions.py",
+            "args": [""],
+            "wait_ready": true,
+            "autorestart": false,
+            "max_restarts": 5,
+            "interpreter": "./env/bin/python"
+        },
+        {
+            "name": "twitter-job",
+            "script": "twitter.py",
+            "args": [""],
+            "wait_ready": true,
+            "autorestart": false,
+            "max_restarts": 5,
+            "interpreter": "./env/bin/python"
+        }
+    ]
+}

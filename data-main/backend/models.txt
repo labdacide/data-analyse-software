@@ -1,0 +1,61 @@
+# Profiles:
+
+address | twitterId | discordId // depends on the platform (twitter_id_str, discord_id, address)
+platform (TWITTER, DISCORD, ETH, TEZOS, POLYGON, SOLANA)
+collection // if blockchain profile
+    address
+    name
+    symbol // alias on tezos
+    image
+    balance // number of tokens
+    floor_price
+    is_spam
+    is_airdrop
+twitter {
+    id
+    name (displayed name)
+    username (aka screen_name)
+    followers
+    followings
+    tweets
+    description
+}
+discord {
+    id
+    username (not unique)
+    discriminator (the user's 4-digit discord-tag)
+    bot?
+    description
+}
+
+
+# Events:
+
+workspaceId
+name/title
+from // id of a profile above
+date
+properties:
+    to // also an id of a profile
+    platform
+    address/contract
+    price
+    royalties
+    text
+    username
+    etc
+
+
+# Nfts:
+
+address
+platform
+name
+symbol
+thumbnail
+price
+    value
+    currency
+converted
+    value
+    currency
