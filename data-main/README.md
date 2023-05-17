@@ -23,9 +23,3 @@ npm i
 ```bash
 npm run dev
 ```
-
-### Demo Account
-
-Link: https://app.me3x.xyz
-Login: demo@me3x.xyz
-Pwd: demo
